@@ -1,15 +1,16 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiUser, FiPackage, FiMapPin, FiLogOut, FiEdit2, FiSave } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/store';
 import { usersAPI } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-export default function AccountPage() {
+function AccountContent() {
   const router = useRouter();
   const { user, loadUser, logout } = useAuthStore();
   const [profile, setProfile] = useState<any>(null);
@@ -114,5 +115,13 @@ export default function AccountPage() {
       </div>
       <Footer />
     </>
+  );
+}
+
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AccountContent />
+    </Suspense>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -8,7 +8,7 @@ import { productsAPI, categoriesAPI } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
-export default function HomePage() {
+function HomeContent() {
   const [featured, setFeatured] = useState<any[]>([]);
   const [newArrivals, setNewArrivals] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -329,5 +329,13 @@ export default function HomePage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<LoadingSpinner size="lg" />}>
+      <HomeContent />
+    </Suspense>
   );
 }
