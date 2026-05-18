@@ -1,9 +1,10 @@
 /* eslint-disable */
+import * as dotenv from 'dotenv';
+dotenv.config();
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/akm-ecommerce';
-
 const UserSchema = new mongoose.Schema({
   firstName: String, lastName: String, email: String, password: String,
   phone: String, role: { type: String, default: 'user' }, isBlocked: { type: Boolean, default: false },

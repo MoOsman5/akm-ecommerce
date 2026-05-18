@@ -12,7 +12,24 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      const allowedOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+        : [];
+      
+      const defaultAllowed = [
+        'http://localhost:3000',
+        'https://akm-ecommerce-pnyk.vercel.app',
+      ];
+      
+      const allAllowed = [...defaultAllowed, ...allowedOrigins];
+      
+      if (!origin || allAllowed.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
