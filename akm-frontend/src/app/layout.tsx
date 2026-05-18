@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: 'AKM — Premium Streetwear & Clothing',
   description: 'Discover the latest streetwear collection from AKM. Premium quality clothing, hoodies, t-shirts, and accessories.',
   keywords: 'AKM, streetwear, clothing, fashion, t-shirts, hoodies, jackets',
+  icons: {
+    icon: '/logo-dark.png',
+    shortcut: '/logo-dark.png',
+    apple: '/logo-dark.png',
+  },
 };
 
 export default function RootLayout({
