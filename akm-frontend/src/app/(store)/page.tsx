@@ -133,7 +133,7 @@ function HomeContent() {
     setTimeout(() => setCopied(false), 3000);
   };
 
-  if (loading) return <LoadingSpinner size="lg" />;
+  if (loading && !showIntro) return <LoadingSpinner size="lg" />;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -719,9 +719,40 @@ function HomeContent() {
   );
 }
 
+function CinematicFallback() {
+  return (
+    <div className="fixed inset-0 bg-black z-[9999] flex flex-col items-center justify-center select-none overflow-hidden">
+      <div className="relative flex flex-col items-center">
+        {/* Typographic Logo Reveal */}
+        <div className="text-white font-display font-black text-4xl md:text-6xl tracking-[0.8em] uppercase flex items-center gap-1">
+          A K M
+        </div>
+
+        {/* Subtitle brand stamp */}
+        <p className="text-accent-400 font-mono text-[9px] uppercase tracking-[0.3em] mt-4">
+          Streetwear Archives / Vol. II
+        </p>
+        
+        {/* Subtle loading horizontal glowing line */}
+        <div className="w-48 h-[1px] bg-dark-850 mt-8 relative overflow-hidden rounded-full">
+          <div className="absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-accent-500 to-transparent left-[-100%]" />
+        </div>
+      </div>
+
+      {/* Dynamic editorial frame numbers */}
+      <div className="absolute bottom-10 left-10 text-[9px] font-mono text-dark-500 tracking-widest uppercase">
+        [ 2026 DROP_01 ]
+      </div>
+      <div className="absolute bottom-10 right-10 text-[9px] font-mono text-dark-500 tracking-widest uppercase">
+        LOC // NY_TK
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   return (
-    <Suspense fallback={<LoadingSpinner size="lg" />}>
+    <Suspense fallback={<CinematicFallback />}>
       <HomeContent />
     </Suspense>
   );
