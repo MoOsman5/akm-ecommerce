@@ -89,14 +89,23 @@ function HomeContent() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('akm-intro-seen');
+    }
+    return true;
+  });
 
   useEffect(() => {
+    if (!showIntro) return;
     const timer = setTimeout(() => {
       setShowIntro(false);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('akm-intro-seen', 'true');
+      }
     }, 2200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [showIntro]);
 
   // Auto scroll slides
   useEffect(() => {

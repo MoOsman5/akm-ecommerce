@@ -17,15 +17,15 @@ export class CategoriesService {
   }
 
   async findAll() {
-    return this.categoryModel.find().sort({ sortOrder: 1, name: 1 });
+    return this.categoryModel.find().sort({ sortOrder: 1, name: 1 }).lean();
   }
 
   async findActive() {
-    return this.categoryModel.find({ isActive: true }).sort({ sortOrder: 1, name: 1 });
+    return this.categoryModel.find({ isActive: true }).sort({ sortOrder: 1, name: 1 }).lean();
   }
 
   async findBySlug(slug: string) {
-    const category = await this.categoryModel.findOne({ slug });
+    const category = await this.categoryModel.findOne({ slug }).lean();
     if (!category) throw new NotFoundException('Category not found');
     return category;
   }

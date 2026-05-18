@@ -8,6 +8,8 @@ import { CreateProductDto, UpdateProductDto, ProductQueryDto } from './dto/produ
 
 @Injectable()
 export class ProductsService {
+  private categoryCache = new Map<string, any>();
+
   constructor(
     @InjectModel(Product.name) private productModel: Model<Product>,
     @InjectModel(Category.name) private categoryModel: Model<Category>,
@@ -23,6 +25,8 @@ export class ProductsService {
       uniqueSlug = `${slug}-${count}`;
     }
     const categoryId = typeof dto.category === 'string' ? new Types.ObjectId(dto.category) : dto.category;
+    // Clear cache as category associations might have updated
+    this.categoryCache.clear();
     return this.productModel.create({ ...dto, category: categoryId, slug: uniqueSlug });
   }
 
@@ -31,7 +35,13 @@ export class ProductsService {
     const filter: any = { isActive: true };
 
     if (category) {
-      const categoryDoc = await this.categoryModel.findOne({ slug: category });
+      let categoryDoc = this.categoryCache.get(category);
+      if (!categoryDoc) {
+        categoryDoc = await this.categoryModel.findOne({ slug: category }).lean();
+        if (categoryDoc) {
+          this.categoryCache.set(category, categoryDoc);
+        }
+      }
       if (categoryDoc) filter.category = categoryDoc._id;
     }
 
@@ -53,7 +63,7 @@ export class ProductsService {
 
     const skip = (page - 1) * limit;
     const [products, total] = await Promise.all([
-      this.productModel.find(filter).populate('category', 'name slug').sort(sortOption).skip(skip).limit(limit),
+      this.productModel.find(filter).populate('category', 'name slug').sort(sortOption).skip(skip).limit(limit).lean(),
       this.productModel.countDocuments(filter),
     ]);
 
@@ -61,13 +71,13 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string) {
-    const product = await this.productModel.findOne({ slug, isActive: true }).populate('category', 'name slug');
+    const product = await this.productModel.findOne({ slug, isActive: true }).populate('category', 'name slug').lean();
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
 
   async findById(id: string) {
-    const product = await this.productModel.findById(id).populate('category', 'name slug');
+    const product = await this.productModel.findById(id).populate('category', 'name slug').lean();
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
@@ -80,32 +90,35 @@ export class ProductsService {
     if (dto.category && typeof dto.category === 'string') {
       updateData.category = new Types.ObjectId(dto.category) as any;
     }
+    this.categoryCache.clear();
     const product = await this.productModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
 
   async delete(id: string) {
+    this.categoryCache.clear();
     const product = await this.productModel.findByIdAndDelete(id);
     if (!product) throw new NotFoundException('Product not found');
     return { message: 'Product deleted' };
   }
 
   async getFeatured() {
-    return this.productModel.find({ isFeatured: true, isActive: true }).populate('category', 'name slug').limit(8);
+    return this.productModel.find({ isFeatured: true, isActive: true }).populate('category', 'name slug').limit(8).lean();
   }
 
   async getNewArrivals() {
-    return this.productModel.find({ isActive: true }).populate('category', 'name slug').sort({ createdAt: -1 }).limit(8);
+    return this.productModel.find({ isActive: true }).populate('category', 'name slug').sort({ createdAt: -1 }).limit(8).lean();
   }
 
   async getRelated(productId: string) {
-    const product = await this.productModel.findById(productId);
+    const product = await this.productModel.findById(productId).lean();
     if (!product) return [];
     return this.productModel
       .find({ category: product.category, _id: { $ne: productId }, isActive: true })
       .populate('category', 'name slug')
-      .limit(4);
+      .limit(4)
+      .lean();
   }
 
   async updateFeatured(productIds: string[], isFeatured: boolean) {
