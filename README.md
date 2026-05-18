@@ -20,7 +20,7 @@ A full-stack e-commerce platform for the **AKM** clothing brand, featuring a cus
 
 ### 1. Backend
 ```bash
-cd "akm backend"
+cd akm-backend
 cp .env.example .env      # Edit with your MongoDB URI & Cloudinary keys
 npm install
 npm run seed               # Seed demo data
@@ -31,7 +31,7 @@ npm run start:dev          # http://localhost:5000
 
 ### 2. Frontend
 ```bash
-cd "akm frontend"
+cd akm-frontend
 cp .env.local.example .env.local   # Set API URL
 npm install
 npm run dev                # http://localhost:3000
@@ -52,7 +52,7 @@ npm run dev                # http://localhost:3000
 
 ```
 AKM ecommerce/
-├── akm backend/           # NestJS API
+├── akm-backend/           # NestJS API
 │   └── src/
 │       ├── auth/          # JWT authentication
 │       ├── users/         # User management
@@ -65,7 +65,7 @@ AKM ecommerce/
 │       ├── upload/        # Cloudinary integration
 │       ├── seed/          # Database seeder
 │       └── common/        # Guards, decorators
-├── akm frontend/          # Next.js App
+├── akm-frontend/          # Next.js App
 │   └── src/
 │       ├── app/
 │       │   ├── (store)/   # Customer pages
@@ -174,11 +174,11 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api
 
 ### Frontend (Vercel)
 1. Push to GitHub
-2. Import project in Vercel → set root to `akm frontend`
+2. Import project in Vercel → set root to `akm-frontend`
 3. Add `NEXT_PUBLIC_API_URL` environment variable
 4. Deploy
 
 ### Backend
-- **Railway/Render**: Deploy `akm backend` folder
+- **Railway/Render**: Deploy `akm-backend` folder
 - **Docker**: Add a Dockerfile and deploy to any container service
 - Set all env variables in the platform settings
