@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import slugify from 'slugify';
 import { Product } from './schemas/product.schema';
 import { Category } from '../categories/schemas/category.schema';
@@ -22,7 +22,8 @@ export class ProductsService {
       count++;
       uniqueSlug = `${slug}-${count}`;
     }
-    return this.productModel.create({ ...dto, slug: uniqueSlug });
+    const categoryId = typeof dto.category === 'string' ? new Types.ObjectId(dto.category) : dto.category;
+    return this.productModel.create({ ...dto, category: categoryId, slug: uniqueSlug });
   }
 
   async findAll(query: ProductQueryDto) {
@@ -75,7 +76,11 @@ export class ProductsService {
     if (dto.name) {
       (dto as any).slug = slugify(dto.name, { lower: true, strict: true });
     }
-    const product = await this.productModel.findByIdAndUpdate(id, dto, { new: true });
+    const updateData = { ...dto };
+    if (dto.category && typeof dto.category === 'string') {
+      updateData.category = new Types.ObjectId(dto.category) as any;
+    }
+    const product = await this.productModel.findByIdAndUpdate(id, updateData, { new: true });
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
