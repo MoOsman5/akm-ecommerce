@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 
 const HERO_SLIDES = [
   {
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1600&q=80',
+    image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1600&q=80',
     tag: 'THE NEW STANDARD / DROP 01',
     titleLine1: 'Comfort You',
     titleLine2: 'Can Feel.',
@@ -66,7 +66,7 @@ const LOOK_HOTSPOTS = [
     price: 75,
     top: '46%',
     left: '52%',
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=300',
+    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=300',
     desc: 'Heavyweight fleece drop-shoulder silhouette.'
   },
   {
@@ -409,7 +409,7 @@ function HomeContent() {
             {/* Interactive Image Frame (8 Cols) */}
             <div className="lg:col-span-8 relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group border border-dark-150/15">
               <Image
-                src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=1200&q=80"
+                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1200&q=80"
                 alt="STREET LOOK editorial outfit"
                 fill
                 sizes="(max-width: 1024px) 100vw, 70vw"
@@ -665,18 +665,41 @@ function HomeContent() {
             className="fixed inset-0 bg-black z-[9999] flex flex-col items-center justify-center select-none overflow-hidden"
           >
             <div className="relative flex flex-col items-center">
-              {/* Typographic Logo Reveal */}
+              {/* Atmospheric Ambient Halo Backdrop */}
               <motion.div
-                initial={{ opacity: 0, y: 30, letterSpacing: '0.4em' }}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ 
+                  opacity: [0.2, 0.65, 0.4, 0.6],
+                  scale: [0.7, 1.05, 0.92, 1],
+                }}
+                transition={{ 
+                  duration: 2.2,
+                  ease: "easeInOut"
+                }}
+                className="absolute inset-0 m-auto w-48 h-48 bg-accent-500/10 rounded-full blur-[80px] -z-10 pointer-events-none"
+              />
+
+              {/* Brand Logo Reveal with Cinematic Focus Blur */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.85, filter: 'blur(16px)' }}
                 animate={{ 
                   opacity: 1, 
                   y: 0, 
-                  letterSpacing: '0.8em',
-                  transition: { duration: 1.2, ease: 'easeOut' }
+                  scale: 1,
+                  filter: 'blur(0px)',
                 }}
-                className="text-white font-display font-black text-4xl md:text-6xl tracking-[0.6em] uppercase flex items-center gap-1"
+                transition={{ 
+                  duration: 1.6, 
+                  ease: [0.16, 1, 0.3, 1] 
+                }}
+                className="flex items-center justify-center h-20 md:h-24 relative z-10"
               >
-                A K M
+                <img 
+                  src="/logo-dark.png" 
+                  alt="AKM Logo" 
+                  className="h-12 md:h-16 w-auto object-contain brightness-[1.1] contrast-[1.05]"
+                  onError={(e) => e.currentTarget.style.display='none'} 
+                />
               </motion.div>
 
               {/* Subtitle brand stamp */}
@@ -723,9 +746,17 @@ function CinematicFallback() {
   return (
     <div className="fixed inset-0 bg-black z-[9999] flex flex-col items-center justify-center select-none overflow-hidden">
       <div className="relative flex flex-col items-center">
-        {/* Typographic Logo Reveal */}
-        <div className="text-white font-display font-black text-4xl md:text-6xl tracking-[0.8em] uppercase flex items-center gap-1">
-          A K M
+        {/* Atmospheric Ambient Halo Backdrop */}
+        <div className="absolute inset-0 m-auto w-48 h-48 bg-accent-500/5 rounded-full blur-[80px] -z-10 pointer-events-none" />
+
+        {/* Brand Logo Reveal */}
+        <div className="flex items-center justify-center h-20 md:h-24 relative z-10">
+          <img 
+            src="/logo-dark.png" 
+            alt="AKM Logo" 
+            className="h-12 md:h-16 w-auto object-contain brightness-[1.1] contrast-[1.05]"
+            onError={(e) => e.currentTarget.style.display='none'} 
+          />
         </div>
 
         {/* Subtitle brand stamp */}

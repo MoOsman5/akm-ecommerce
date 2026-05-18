@@ -182,7 +182,7 @@ export default function Header() {
                             {/* Featured collection card */}
                             <div className="col-span-6 relative rounded-3xl overflow-hidden aspect-[4/3] border border-dark-100 dark:border-dark-850 shadow-inner flex flex-col justify-end p-5 group/banner">
                               <Image
-                                src="https://images.unsplash.com/photo-1556821840-3a63f95509a7?w=500&q=80"
+                                src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80" unoptimized
                                 alt="Drop 01 Collection"
                                 fill
                                 sizes="250px"
