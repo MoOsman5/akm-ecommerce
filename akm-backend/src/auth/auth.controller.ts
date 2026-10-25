@@ -11,11 +11,21 @@ import { GetUser } from '../common/decorators/get-user.decorator';
 export class AuthController {
   constructor(private authService: AuthService) { }
 
+  // In production the frontend (Vercel) and API (Render) are on different sites,
+  // so the refresh cookie must be SameSite=None + Secure or the browser won't send it.
+  // Locally (localhost:3000 -> localhost:5000) it's same-site, so Lax works.
+  private get refreshCookieOptions() {
+    const isProd = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
+    };
+  }
+
   private setRefreshCookie(res: Response, refreshToken: string) {
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Must be lax to work across ports (3000 -> 5000) on localhost 
+      ...this.refreshCookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
@@ -54,11 +64,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout and clear refresh token cookie' })
   async logout(@GetUser('_id') userId: string, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(userId);
-    res.clearCookie('refresh_token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+    res.clearCookie('refresh_token', this.refreshCookieOptions);
     return { message: 'Logged out successfully' };
   }
 

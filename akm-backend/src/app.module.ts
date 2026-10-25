@@ -12,12 +12,20 @@ import { OrdersModule } from './orders/orders.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { AdminModule } from './admin/admin.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(
       process.env.MONGODB_URI || 'mongodb://localhost:27017/akm-ecommerce',
+      {
+        // Fail fast with a clear error in the logs (e.g. paused Atlas cluster,
+        // IP not allowlisted) instead of retrying silently for minutes.
+        serverSelectionTimeoutMS: 10000,
+        retryAttempts: 3,
+        retryDelay: 3000,
+      },
     ),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     AuthModule,
@@ -30,6 +38,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AdminModule,
     CloudinaryModule,
   ],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,

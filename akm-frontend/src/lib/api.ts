@@ -7,6 +7,9 @@ const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
+  // Long enough to survive a cold start on a sleeping free-tier host,
+  // short enough that the UI can show an error instead of hanging forever.
+  timeout: 70000,
 });
 
 // Add auth token to requests
