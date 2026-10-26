@@ -35,6 +35,8 @@ function ProductsList() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [slowLoad, setSlowLoad] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -59,8 +61,17 @@ function ProductsList() {
     });
   }, [searchParams]);
 
+  // The API runs on a free host that sleeps when idle; tell shoppers why the
+  // first load can take a while instead of showing an endless spinner.
   useEffect(() => {
-    loadProducts();
+    if (!loading) { setSlowLoad(false); return; }
+    const t = setTimeout(() => setSlowLoad(true), 4000);
+    return () => clearTimeout(t);
+  }, [loading]);
+
+  useEffect(() => {
+    // Products are loaded by the filters effect below; loading them here too
+    // fired a duplicate request on every page visit.
     categoriesAPI.getAll().then((res) => setCategories(res.data)).catch(() => {});
   }, []); // eslint-disable-line
 
@@ -70,6 +81,7 @@ function ProductsList() {
 
   async function loadProducts() {
     setLoading(true);
+    setLoadError(false);
     try {
       const params: any = { page: filters.page, limit: filters.limit };
       if (filters.category) params.category = filters.category;
@@ -86,6 +98,7 @@ function ProductsList() {
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Failed to load products', error);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -399,7 +412,22 @@ function ProductsList() {
 
           {/* Products Grid */}
           {loading ? (
-            <LoadingSpinner size="lg" />
+            <div className="text-center">
+              <LoadingSpinner size="lg" />
+              {slowLoad && (
+                <p className="text-dark-500 dark:text-dark-400 text-sm -mt-2">
+                  Waking up the store server — the first load can take up to a minute.
+                </p>
+              )}
+            </div>
+          ) : loadError ? (
+            <div className="text-center py-24 bg-dark-50/50 dark:bg-dark-900/10 rounded-[2rem] border border-dark-100/50 dark:border-dark-800/40 p-8 shadow-sm">
+              <h3 className="font-display font-extrabold text-lg dark:text-white uppercase tracking-wider">Couldn&apos;t load products</h3>
+              <p className="text-dark-500 dark:text-dark-400 text-sm mt-1 max-w-xs mx-auto">The store server didn&apos;t respond. Please try again in a moment.</p>
+              <button onClick={loadProducts} className="btn-secondary text-xs font-bold tracking-widest uppercase mt-6 px-6 py-3 border-2 border-dark-250 dark:border-dark-850 rounded-xl hover:bg-dark-900 dark:hover:bg-white text-dark-900 dark:text-white hover:text-white dark:hover:text-dark-900 transition-all">
+                Try Again
+              </button>
+            </div>
           ) : products.length === 0 ? (
             <div className="text-center py-24 bg-dark-50/50 dark:bg-dark-900/10 rounded-[2rem] border border-dark-100/50 dark:border-dark-800/40 p-8 shadow-sm">
               <span className="text-5xl mb-4 block">🔍</span>
